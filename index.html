@@ -8,12 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Study Planner">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="description" content="Weekly Study Planner with Pomodoro Timer - Chinese priority">
+  <meta name="description" content="Weekly Study Planner with Time Management Techniques + Pomodoro">
   
-  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
-  
-  <!-- Icons (replace with your own later) -->
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -21,19 +18,13 @@
   <title>Study Planner</title>
   
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: #f1f5f9;
       color: #1e293b;
       line-height: 1.5;
-      padding: 0;
       padding-bottom: env(safe-area-inset-bottom);
       min-height: 100vh;
       min-height: 100dvh;
@@ -47,64 +38,47 @@
       min-height: 100dvh;
     }
 
-    /* Header */
     .header {
       background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
       color: white;
-      padding: 20px 20px 18px;
-      padding-top: calc(20px + env(safe-area-inset-top));
+      padding: 18px 16px;
+      padding-top: calc(18px + env(safe-area-inset-top));
       text-align: center;
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
-    .header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+    .header h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 2px; }
+    .header p { font-size: 0.82rem; opacity: 0.9; }
 
-    .header p {
-      font-size: 0.85rem;
-      opacity: 0.9;
-    }
+    .content { padding: 16px 14px 40px; }
 
-    /* Content */
-    .content {
-      padding: 20px 16px 40px;
-    }
-
-    /* ===== POMODORO TIMER ===== */
+    /* Pomodoro */
     .pomodoro-section {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 20px 16px;
-      margin-bottom: 24px;
+      border-radius: 14px;
+      padding: 18px 14px;
+      margin-bottom: 20px;
       text-align: center;
     }
 
-    .pomodoro-section h2 {
-      font-size: 1.1rem;
-      color: #1e40af;
-      margin-bottom: 14px;
-    }
+    .pomodoro-section h2 { font-size: 1.05rem; color: #1e40af; margin-bottom: 12px; }
 
     .timer-display {
-      font-size: 3.6rem;
+      font-size: 3.4rem;
       font-weight: 700;
       color: #0f172a;
       letter-spacing: 2px;
-      margin: 6px 0;
       font-variant-numeric: tabular-nums;
     }
 
     .timer-mode {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      margin-bottom: 12px;
-      padding: 5px 16px;
+      margin: 8px 0 12px;
+      padding: 4px 14px;
       border-radius: 20px;
       display: inline-block;
     }
@@ -113,122 +87,100 @@
     .mode-short { background: #ecfdf5; color: #047857; }
     .mode-long { background: #eff6ff; color: #1d4ed8; }
 
-    .session-info {
-      font-size: 0.88rem;
-      color: #64748b;
-      margin-bottom: 14px;
-    }
+    .session-info { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
 
-    .session-dots {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      transition: background 0.3s;
-    }
-
+    .session-dots { display: flex; justify-content: center; gap: 9px; margin-bottom: 16px; }
+    .dot { width: 13px; height: 13px; border-radius: 50%; background: #e2e8f0; }
     .dot.active { background: #3b82f6; }
     .dot.completed { background: #22c55e; }
 
-    .timer-controls {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
+    .timer-controls { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
 
     .btn {
-      padding: 12px 20px;
+      padding: 11px 16px;
       border: none;
-      border-radius: 12px;
-      font-size: 0.95rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
-      min-width: 90px;
+      min-width: 80px;
       touch-action: manipulation;
     }
 
     .btn-start { background: #22c55e; color: white; }
-    .btn-start:active { background: #16a34a; }
     .btn-pause { background: #f59e0b; color: white; }
-    .btn-pause:active { background: #d97706; }
     .btn-reset { background: #e2e8f0; color: #475569; }
-    .btn-reset:active { background: #cbd5e1; }
     .btn-skip { background: #3b82f6; color: white; }
-    .btn-skip:active { background: #2563eb; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:disabled { opacity: 0.5; }
 
     .timer-settings {
       display: flex;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: #64748b;
     }
 
-    .timer-settings label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
     .timer-settings input {
-      width: 46px;
-      padding: 6px 4px;
+      width: 42px;
+      padding: 5px 3px;
       border: 1px solid #cbd5e1;
-      border-radius: 8px;
+      border-radius: 6px;
       text-align: center;
-      font-size: 0.9rem;
-      -moz-appearance: textfield;
+      font-size: 0.85rem;
     }
 
-    .timer-settings input::-webkit-outer-spin-button,
-    .timer-settings input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
+    /* Techniques Box */
+    .techniques-box {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
     }
+
+    .techniques-box h2 {
+      font-size: 0.95rem;
+      color: #0369a1;
+      margin-bottom: 10px;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tech-item {
+      background: white;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border-left: 3px solid #0ea5e9;
+    }
+
+    .tech-item strong { color: #0c4a6e; display: block; margin-bottom: 2px; }
 
     /* Priority */
     .priority-box {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 24px;
+      padding: 14px;
+      margin-bottom: 20px;
     }
 
-    .priority-box h2 {
-      font-size: 0.95rem;
-      color: #1e40af;
-      margin-bottom: 10px;
-    }
+    .priority-box h2 { font-size: 0.95rem; color: #1e40af; margin-bottom: 8px; }
 
     .priority-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px 12px;
+      gap: 6px 10px;
+      font-size: 0.85rem;
     }
 
-    .priority-item {
-      font-size: 0.88rem;
-      color: #334155;
-      display: flex;
-      gap: 6px;
-    }
-
-    .priority-item span {
-      font-weight: 600;
-      color: #1e40af;
-    }
+    .priority-item span { font-weight: 600; color: #1e40af; }
 
     /* Table */
     .table-container {
@@ -236,43 +188,33 @@
       -webkit-overflow-scrolling: touch;
       border-radius: 12px;
       border: 1px solid #e2e8f0;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 780px;
-    }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
 
     thead th {
       background: #1e40af;
-      color: #ffffff;
-      padding: 12px 8px;
-      font-size: 0.82rem;
+      color: white;
+      padding: 11px 6px;
+      font-size: 0.8rem;
       font-weight: 600;
       text-align: center;
-      position: sticky;
-      top: 0;
     }
 
-    thead th:first-child {
-      text-align: left;
-      padding-left: 12px;
-      width: 100px;
-    }
+    thead th:first-child { text-align: left; padding-left: 10px; width: 95px; }
 
     tbody td {
-      padding: 10px 6px;
+      padding: 9px 5px;
       text-align: center;
       border-bottom: 1px solid #e2e8f0;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       vertical-align: middle;
     }
 
     tbody td:first-child {
       text-align: left;
-      padding-left: 12px;
+      padding-left: 10px;
       font-weight: 600;
       color: #475569;
       background: #f8fafc;
@@ -289,61 +231,41 @@
     .rest { background: #f8fafc; color: #64748b; }
     .review { background: #fdf2f8; color: #be185d; font-weight: 500; }
     .sleep { background: #f1f5f9; color: #64748b; }
+    .frog { background: #fef3c7; color: #92400e; font-weight: 600; } /* Eat the Frog */
 
     /* Legend */
     .legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 14px;
-      margin-bottom: 24px;
-      font-size: 0.8rem;
+      gap: 7px 12px;
+      margin-bottom: 20px;
+      font-size: 0.78rem;
     }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      border: 1px solid rgba(0,0,0,0.08);
-    }
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+    .legend-color { width: 11px; height: 11px; border-radius: 3px; }
 
     /* Notes */
     .notes {
       background: #f0f9ff;
       border: 1px solid #bae6fd;
       border-radius: 12px;
-      padding: 16px;
-      font-size: 0.88rem;
+      padding: 14px;
+      font-size: 0.85rem;
       color: #334155;
     }
 
-    .notes h3 {
-      color: #0369a1;
-      font-size: 0.95rem;
-      margin-bottom: 8px;
-    }
+    .notes h3 { color: #0369a1; font-size: 0.95rem; margin-bottom: 8px; }
+    .notes p { margin-bottom: 6px; }
+    .notes strong { color: #0c4a6e; }
 
-    .notes p {
-      margin-bottom: 6px;
-    }
-
-    .notes strong {
-      color: #0c4a6e;
-    }
-
-    /* Install banner */
     .install-banner {
       display: none;
       background: #1e40af;
       color: white;
-      padding: 12px 16px;
+      padding: 11px 14px;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       position: sticky;
       bottom: 0;
       z-index: 99;
@@ -353,41 +275,35 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .install-banner button {
       background: white;
       color: #1e40af;
       border: none;
-      padding: 8px 16px;
+      padding: 7px 14px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-      white-space: nowrap;
+      font-size: 0.82rem;
     }
 
-    /* Print */
     @media print {
       .pomodoro-section, .install-banner, .header { display: none !important; }
-      body { background: white; padding: 0; }
-      .planner { box-shadow: none; }
     }
 
     @media (max-width: 480px) {
-      .timer-display { font-size: 3rem; }
-      .btn { padding: 11px 16px; min-width: 80px; font-size: 0.9rem; }
+      .timer-display { font-size: 2.9rem; }
+      .tech-grid { grid-template-columns: 1fr; }
       .priority-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="planner">
-    <!-- Header -->
     <div class="header">
       <h1>📅 Study Planner</h1>
-      <p>ចិនអាទិភាពលេខ១ · Pomodoro Timer</p>
+      <p>Time Management + Pomodoro · ចិនអាទិភាពលេខ១</p>
     </div>
 
     <div class="content">
@@ -399,10 +315,7 @@
         <div class="timer-display" id="timerDisplay">25:00</div>
         <div class="session-info">Session <span id="sessionCount">1</span> of 4</div>
         <div class="session-dots" id="sessionDots">
-          <div class="dot active"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
+          <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
         </div>
         <div class="timer-controls">
           <button class="btn btn-start" id="startBtn" onclick="startTimer()">▶ Start</button>
@@ -417,11 +330,42 @@
         </div>
       </div>
 
-      <!-- Priorities -->
+      <!-- TECHNIQUES -->
+      <div class="techniques-box">
+        <h2>🧠 បច្ចេកវិទ្យាគ្រប់គ្រងពេលវេលា ដែលបានបញ្ចូល</h2>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <strong>🍅 Pomodoro</strong>
+            25 នាទី Focus + 5 នាទីសម្រាក
+          </div>
+          <div class="tech-item">
+            <strong>📦 Time Blocking</strong>
+            កំណត់ម៉ោងជាក់លាក់សម្រាប់មុខវិជ្ជានីមួយៗ
+          </div>
+          <div class="tech-item">
+            <strong>🐸 Eat the Frog</strong>
+            ធ្វើការងារពិបាកបំផុតនៅពេលព្រឹក
+          </div>
+          <div class="tech-item">
+            <strong>📚 Batching</strong>
+            ដាក់ចិនជាក្រុម (ព្រឹក + យប់)
+          </div>
+          <div class="tech-item">
+            <strong>⭐ Eisenhower</strong>
+            ចិន & Frontend = សំខាន់ + មិនបន្ទាន់
+          </div>
+          <div class="tech-item">
+            <strong>🔄 Weekly Review</strong>
+            ពិនិត្យ និងរៀបផែនការរាល់ថ្ងៃអាទិត្យ
+          </div>
+        </div>
+      </div>
+
+      <!-- PRIORITY -->
       <div class="priority-box">
-        <h2>⭐ អាទិភាព</h2>
+        <h2>⭐ អាទិភាព (Eisenhower)</h2>
         <div class="priority-grid">
-          <div class="priority-item"><span>1.</span> 🇨🇳 Chinese</div>
+          <div class="priority-item"><span>1.</span> 🇨🇳 Chinese (សំខាន់បំផុត)</div>
           <div class="priority-item"><span>2.</span> 💻 Web Frontend</div>
           <div class="priority-item"><span>3.</span> 📈 Data Analysis</div>
           <div class="priority-item"><span>4.</span> 📊 Statistic</div>
@@ -430,7 +374,7 @@
         </div>
       </div>
 
-      <!-- Schedule -->
+      <!-- SCHEDULE -->
       <div class="table-container">
         <table>
           <thead>
@@ -447,17 +391,17 @@
           </thead>
           <tbody>
             <tr>
-              <td>06:00–07:00</td>
-              <td class="chinese">🇨🇳 ចិន</td>
-              <td class="chinese">🇨🇳 ចិន</td>
-              <td class="chinese">🇨🇳 ចិន</td>
-              <td class="chinese">🇨🇳 ចិន</td>
-              <td class="chinese">🇨🇳 ចិន</td>
+              <td>06:00–06:45</td>
+              <td class="frog">🐸🇨🇳 ចិន</td>
+              <td class="frog">🐸🇨🇳 ចិន</td>
+              <td class="frog">🐸🇨🇳 ចិន</td>
+              <td class="frog">🐸🇨🇳 ចិន</td>
+              <td class="frog">🐸🇨🇳 ចិន</td>
               <td class="chinese">🇨🇳 ចិន</td>
               <td class="chinese">🇨🇳 ចិន</td>
             </tr>
             <tr>
-              <td>07:00–08:00</td>
+              <td>06:45–07:30</td>
               <td class="rest">🍳 អាហារ</td>
               <td class="rest">🍳</td>
               <td class="rest">🍳</td>
@@ -513,8 +457,8 @@
               <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
               <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
               <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
-              <td class="chinese">🇨🇳 ចិន</td>
-              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 Speaking</td>
+              <td class="chinese">🇨🇳 Full Review</td>
             </tr>
             <tr>
               <td>15:00–15:30</td>
@@ -532,13 +476,13 @@
               <td class="data">📈 Data Analysis</td>
               <td class="csharp">💻 C#</td>
               <td class="network">🌐 Network</td>
-              <td class="stat">📊 Statistic</td>
+              <td class="frontend">📝 IT Practice</td>
               <td class="data">📈 Data Analysis</td>
-              <td class="review">🔄 Review</td>
+              <td class="review">🔄 Weekly Review</td>
             </tr>
             <tr>
               <td>17:00–19:00</td>
-              <td class="rest">🍚 សម្រាក</td>
+              <td class="rest">🍚 សម្រាក/អាហារ</td>
               <td class="rest">🍚</td>
               <td class="rest">🍚</td>
               <td class="rest">🍚</td>
@@ -554,7 +498,7 @@
               <td class="chinese">🇨🇳 Grammar</td>
               <td class="chinese">🇨🇳 Listening</td>
               <td class="chinese">🇨🇳 Speaking</td>
-              <td class="chinese">🇨🇳 Review</td>
+              <td class="chinese">🇨🇳 Light Review</td>
             </tr>
             <tr>
               <td>20:00–20:30</td>
@@ -572,9 +516,9 @@
               <td class="data">📈 Data Analysis</td>
               <td class="csharp">💻 C#</td>
               <td class="network">🌐 Network</td>
-              <td class="frontend">📝 IT Practice</td>
               <td class="frontend">💻 Project</td>
-              <td class="review">📝 Weekly Review</td>
+              <td class="frontend">💻 Project</td>
+              <td class="review">📋 រៀបផែនការ</td>
             </tr>
             <tr>
               <td>21:30–22:00</td>
@@ -584,7 +528,7 @@
               <td class="review">📝 រំលឹក</td>
               <td class="review">📝 រំលឹក</td>
               <td class="review">📝 រំលឹក</td>
-              <td class="review">📋 រៀបផែនការ</td>
+              <td class="sleep">😴</td>
             </tr>
             <tr>
               <td>22:00</td>
@@ -602,41 +546,42 @@
 
       <!-- Legend -->
       <div class="legend">
-        <div class="legend-item"><div class="legend-color" style="background:#fef2f2"></div><span>Chinese</span></div>
-        <div class="legend-item"><div class="legend-color" style="background:#eff6ff"></div><span>Frontend</span></div>
-        <div class="legend-item"><div class="legend-color" style="background:#ecfdf5"></div><span>Data</span></div>
-        <div class="legend-item"><div class="legend-color" style="background:#fffbeb"></div><span>Statistic</span></div>
-        <div class="legend-item"><div class="legend-color" style="background:#f5f3ff"></div><span>C#</span></div>
-        <div class="legend-item"><div class="legend-color" style="background:#ecfeff"></div><span>Network</span></div>
-        <div class="legend-item"><div class="legend-color" style="background:#fdf2f8"></div><span>Review</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#fef3c7"></div><span>🐸 Eat the Frog</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#fef2f2"></div><span>🇨🇳 Chinese</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#eff6ff"></div><span>💻 Frontend</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#ecfdf5"></div><span>📈 Data</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#fffbeb"></div><span>📊 Statistic</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#f5f3ff"></div><span>💻 C#</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#ecfeff"></div><span>🌐 Network</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#fdf2f8"></div><span>📝 Review</span></div>
       </div>
 
       <!-- Notes -->
       <div class="notes">
-        <h3>📌 របៀបប្រើ</h3>
-        <p>• <strong>13:30–15:00</strong> = ចិនថ្នាក់ → 08:00 & 19:00 ប្រើសម្រាប់ពង្រឹង</p>
-        <p>• <strong>Pomodoro:</strong> 25 នាទី Focus → 5 នាទី Break → បន្ទាប់ពី 4 សម័យ = 15 នាទី Long Break</p>
-        <p>• អាច <strong>Install</strong> លើទូរស័ព្ទដូច App ពិតប្រាកដ</p>
+        <h3>📌 របៀបប្រើបច្ចេកទេស</h3>
+        <p>• <strong>🐸 Eat the Frog</strong> → ធ្វើចិនពេលព្រឹកមុនគេ (06:00–06:45)</p>
+        <p>• <strong>📦 Time Blocking</strong> → ម៉ោងនីមួយៗមានមុខវិជ្ជាជាក់លាក់ មិនលាយ</p>
+        <p>• <strong>📚 Batching</strong> → ចិនដាក់ជាក្រុម (ព្រឹក + ថ្នាក់ + យប់)</p>
+        <p>• <strong>🍅 Pomodoro</strong> → ប្រើ Timer ខាងលើរាល់ពេល Focus</p>
+        <p>• <strong>🔄 Weekly Review</strong> → ថ្ងៃអាទិត្យ 15:30–17:00 + 20:30–21:30</p>
+        <p>• <strong>2-Minute Rule</strong> → បើការងារតិចជាង 2 នាទី → ធ្វើភ្លាម</p>
       </div>
     </div>
   </div>
 
-  <!-- Install Banner -->
   <div class="install-banner" id="installBanner">
-    <span>📲 តម្លើង App នេះលើទូរស័ព្ទ</span>
+    <span>📲 តម្លើង App</span>
     <button onclick="installApp()">Install</button>
   </div>
 
   <script>
-    // ===== PWA Install =====
+    // PWA Install
     let deferredPrompt;
-
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       document.getElementById('installBanner').classList.add('show');
     });
-
     function installApp() {
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
@@ -645,24 +590,15 @@
         document.getElementById('installBanner').classList.remove('show');
       });
     }
-
-    // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('SW registered'))
-          .catch(err => console.log('SW failed', err));
+        navigator.serviceWorker.register('sw.js').catch(() => {});
       });
     }
 
-    // ===== Pomodoro Timer =====
-    let timer = null;
-    let timeLeft = 25 * 60;
-    let isRunning = false;
-    let currentMode = 'work';
-    let session = 1;
+    // Pomodoro
+    let timer = null, timeLeft = 25 * 60, isRunning = false, currentMode = 'work', session = 1;
     const totalSessions = 4;
-
     const display = document.getElementById('timerDisplay');
     const modeLabel = document.getElementById('modeLabel');
     const sessionCount = document.getElementById('sessionCount');
@@ -700,8 +636,7 @@
     }
 
     function updateDots() {
-      const dots = dotsContainer.querySelectorAll('.dot');
-      dots.forEach((dot, i) => {
+      dotsContainer.querySelectorAll('.dot').forEach((dot, i) => {
         dot.classList.remove('active', 'completed');
         if (i + 1 < session) dot.classList.add('completed');
         else if (i + 1 === session && currentMode === 'work') dot.classList.add('active');
@@ -713,20 +648,10 @@
       isRunning = true;
       startBtn.disabled = true;
       pauseBtn.disabled = false;
-      document.getElementById('focusTime').disabled = true;
-      document.getElementById('shortBreak').disabled = true;
-      document.getElementById('longBreak').disabled = true;
-
+      ['focusTime','shortBreak','longBreak'].forEach(id => document.getElementById(id).disabled = true);
       timer = setInterval(() => {
-        if (timeLeft > 0) {
-          timeLeft--;
-          updateDisplay();
-        } else {
-          clearInterval(timer);
-          isRunning = false;
-          playNotification();
-          nextSession();
-        }
+        if (timeLeft > 0) { timeLeft--; updateDisplay(); }
+        else { clearInterval(timer); isRunning = false; playNotification(); nextSession(); }
       }, 1000);
     }
 
@@ -743,15 +668,10 @@
       isRunning = false;
       startBtn.disabled = false;
       pauseBtn.disabled = true;
-      document.getElementById('focusTime').disabled = false;
-      document.getElementById('shortBreak').disabled = false;
-      document.getElementById('longBreak').disabled = false;
-      currentMode = 'work';
-      session = 1;
+      ['focusTime','shortBreak','longBreak'].forEach(id => document.getElementById(id).disabled = false);
+      currentMode = 'work'; session = 1;
       timeLeft = getTimes().work * 60;
-      updateDisplay();
-      updateModeUI();
-      updateDots();
+      updateDisplay(); updateModeUI(); updateDots();
       sessionCount.textContent = session;
       document.title = 'Study Planner';
     }
@@ -767,28 +687,18 @@
     function nextSession() {
       const times = getTimes();
       if (currentMode === 'work') {
-        if (session === totalSessions) {
-          currentMode = 'long';
-          timeLeft = times.long * 60;
-        } else {
-          currentMode = 'short';
-          timeLeft = times.short * 60;
-        }
+        currentMode = (session === totalSessions) ? 'long' : 'short';
+        timeLeft = (currentMode === 'long' ? times.long : times.short) * 60;
       } else {
-        if (currentMode === 'long') session = 1;
-        else session++;
+        if (currentMode === 'long') session = 1; else session++;
         currentMode = 'work';
         timeLeft = times.work * 60;
       }
-      updateDisplay();
-      updateModeUI();
-      updateDots();
+      updateDisplay(); updateModeUI(); updateDots();
       sessionCount.textContent = session;
       startBtn.disabled = false;
       pauseBtn.disabled = true;
-      document.getElementById('focusTime').disabled = false;
-      document.getElementById('shortBreak').disabled = false;
-      document.getElementById('longBreak').disabled = false;
+      ['focusTime','shortBreak','longBreak'].forEach(id => document.getElementById(id).disabled = false);
     }
 
     function playNotification() {
@@ -796,19 +706,15 @@
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        gain.gain.value = 0.25;
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880; gain.gain.value = 0.25;
         osc.start();
         setTimeout(() => { osc.stop(); ctx.close(); }, 350);
       } catch(e) {}
       if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
     }
 
-    updateDisplay();
-    updateModeUI();
-    updateDots();
+    updateDisplay(); updateModeUI(); updateDots();
   </script>
 </body>
 </html>
