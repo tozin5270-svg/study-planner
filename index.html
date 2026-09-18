@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1e40af">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Study Planner">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Weekly Study Planner with Pomodoro Timer - Chinese priority">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons (replace with your own later) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <title>Study Planner</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      line-height: 1.5;
+      padding: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .planner {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #ffffff;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      color: white;
+      padding: 20px 20px 18px;
+      padding-top: calc(20px + env(safe-area-inset-top));
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    /* Content */
+    .content {
+      padding: 20px 16px 40px;
+    }
+
+    /* ===== POMODORO TIMER ===== */
+    .pomodoro-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px 16px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .pomodoro-section h2 {
+      font-size: 1.1rem;
+      color: #1e40af;
+      margin-bottom: 14px;
+    }
+
+    .timer-display {
+      font-size: 3.6rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 2px;
+      margin: 6px 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-mode {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding: 5px 16px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .mode-work { background: #fef2f2; color: #b91c1c; }
+    .mode-short { background: #ecfdf5; color: #047857; }
+    .mode-long { background: #eff6ff; color: #1d4ed8; }
+
+    .session-info {
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-bottom: 14px;
+    }
+
+    .session-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      transition: background 0.3s;
+    }
+
+    .dot.active { background: #3b82f6; }
+    .dot.completed { background: #22c55e; }
+
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 90px;
+      touch-action: manipulation;
+    }
+
+    .btn-start { background: #22c55e; color: white; }
+    .btn-start:active { background: #16a34a; }
+    .btn-pause { background: #f59e0b; color: white; }
+    .btn-pause:active { background: #d97706; }
+    .btn-reset { background: #e2e8f0; color: #475569; }
+    .btn-reset:active { background: #cbd5e1; }
+    .btn-skip { background: #3b82f6; color: white; }
+    .btn-skip:active { background: #2563eb; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .timer-settings {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+
+    .timer-settings label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .timer-settings input {
+      width: 46px;
+      padding: 6px 4px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.9rem;
+      -moz-appearance: textfield;
+    }
+
+    .timer-settings input::-webkit-outer-spin-button,
+    .timer-settings input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+
+    /* Priority */
+    .priority-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .priority-box h2 {
+      font-size: 0.95rem;
+      color: #1e40af;
+      margin-bottom: 10px;
+    }
+
+    .priority-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+    }
+
+    .priority-item {
+      font-size: 0.88rem;
+      color: #334155;
+      display: flex;
+      gap: 6px;
+    }
+
+    .priority-item span {
+      font-weight: 600;
+      color: #1e40af;
+    }
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+    }
+
+    thead th {
+      background: #1e40af;
+      color: #ffffff;
+      padding: 12px 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+
+    thead th:first-child {
+      text-align: left;
+      padding-left: 12px;
+      width: 100px;
+    }
+
+    tbody td {
+      padding: 10px 6px;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.78rem;
+      vertical-align: middle;
+    }
+
+    tbody td:first-child {
+      text-align: left;
+      padding-left: 12px;
+      font-weight: 600;
+      color: #475569;
+      background: #f8fafc;
+      border-right: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .chinese { background: #fef2f2; color: #b91c1c; font-weight: 500; }
+    .frontend { background: #eff6ff; color: #1d4ed8; font-weight: 500; }
+    .data { background: #ecfdf5; color: #047857; font-weight: 500; }
+    .stat { background: #fffbeb; color: #b45309; font-weight: 500; }
+    .csharp { background: #f5f3ff; color: #6d28d9; font-weight: 500; }
+    .network { background: #ecfeff; color: #0e7490; font-weight: 500; }
+    .rest { background: #f8fafc; color: #64748b; }
+    .review { background: #fdf2f8; color: #be185d; font-weight: 500; }
+    .sleep { background: #f1f5f9; color: #64748b; }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-bottom: 24px;
+      font-size: 0.8rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    /* Notes */
+    .notes {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.88rem;
+      color: #334155;
+    }
+
+    .notes h3 {
+      color: #0369a1;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .notes p {
+      margin-bottom: 6px;
+    }
+
+    .notes strong {
+      color: #0c4a6e;
+    }
+
+    /* Install banner */
+    .install-banner {
+      display: none;
+      background: #1e40af;
+      color: white;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      position: sticky;
+      bottom: 0;
+      z-index: 99;
+    }
+
+    .install-banner.show {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .install-banner button {
+      background: white;
+      color: #1e40af;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Print */
+    @media print {
+      .pomodoro-section, .install-banner, .header { display: none !important; }
+      body { background: white; padding: 0; }
+      .planner { box-shadow: none; }
+    }
+
+    @media (max-width: 480px) {
+      .timer-display { font-size: 3rem; }
+      .btn { padding: 11px 16px; min-width: 80px; font-size: 0.9rem; }
+      .priority-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="planner">
+    <!-- Header -->
+    <div class="header">
+      <h1>📅 Study Planner</h1>
+      <p>ចិនអាទិភាពលេខ១ · Pomodoro Timer</p>
+    </div>
+
+    <div class="content">
+
+      <!-- POMODORO -->
+      <div class="pomodoro-section">
+        <h2>🍅 Pomodoro Timer</h2>
+        <div class="timer-mode mode-work" id="modeLabel">Focus Time</div>
+        <div class="timer-display" id="timerDisplay">25:00</div>
+        <div class="session-info">Session <span id="sessionCount">1</span> of 4</div>
+        <div class="session-dots" id="sessionDots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="timer-controls">
+          <button class="btn btn-start" id="startBtn" onclick="startTimer()">▶ Start</button>
+          <button class="btn btn-pause" id="pauseBtn" onclick="pauseTimer()" disabled>⏸ Pause</button>
+          <button class="btn btn-reset" onclick="resetTimer()">↻ Reset</button>
+          <button class="btn btn-skip" onclick="skipSession()">⏭ Skip</button>
+        </div>
+        <div class="timer-settings">
+          <label>Focus <input type="number" id="focusTime" value="25" min="1" max="60"> នាទី</label>
+          <label>Break <input type="number" id="shortBreak" value="5" min="1" max="30"> នាទី</label>
+          <label>Long <input type="number" id="longBreak" value="15" min="5" max="45"> នាទី</label>
+        </div>
+      </div>
+
+      <!-- Priorities -->
+      <div class="priority-box">
+        <h2>⭐ អាទិភាព</h2>
+        <div class="priority-grid">
+          <div class="priority-item"><span>1.</span> 🇨🇳 Chinese</div>
+          <div class="priority-item"><span>2.</span> 💻 Web Frontend</div>
+          <div class="priority-item"><span>3.</span> 📈 Data Analysis</div>
+          <div class="priority-item"><span>4.</span> 📊 Statistic</div>
+          <div class="priority-item"><span>5.</span> 💻 C#</div>
+          <div class="priority-item"><span>6.</span> 🌐 Network</div>
+        </div>
+      </div>
+
+      <!-- Schedule -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ម៉ោង</th>
+              <th>ចន្ទ</th>
+              <th>អង្គារ</th>
+              <th>ពុធ</th>
+              <th>ព្រហស្បតិ៍</th>
+              <th>សុក្រ</th>
+              <th>សៅរ៍</th>
+              <th>អាទិត្យ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>06:00–07:00</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+            </tr>
+            <tr>
+              <td>07:00–08:00</td>
+              <td class="rest">🍳 អាហារ</td>
+              <td class="rest">🍳</td>
+              <td class="rest">🍳</td>
+              <td class="rest">🍳</td>
+              <td class="rest">🍳</td>
+              <td class="rest">🍳</td>
+              <td class="rest">🍳</td>
+            </tr>
+            <tr>
+              <td>08:00–09:30</td>
+              <td class="chinese">🇨🇳 Vocabulary</td>
+              <td class="chinese">🇨🇳 Grammar</td>
+              <td class="chinese">🇨🇳 Reading</td>
+              <td class="chinese">🇨🇳 Vocabulary</td>
+              <td class="chinese">🇨🇳 Grammar</td>
+              <td class="chinese">🇨🇳 Review</td>
+              <td class="chinese">🇨🇳 Review</td>
+            </tr>
+            <tr>
+              <td>09:30–10:00</td>
+              <td class="rest">☕ សម្រាក</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+            </tr>
+            <tr>
+              <td>10:00–12:30</td>
+              <td class="frontend">💻 Web Frontend</td>
+              <td class="frontend">💻 Web Frontend</td>
+              <td class="frontend">💻 Web Frontend</td>
+              <td class="frontend">💻 Web Frontend</td>
+              <td class="frontend">💻 Web Frontend</td>
+              <td class="frontend">💻 Practice</td>
+              <td class="frontend">💻 Review</td>
+            </tr>
+            <tr>
+              <td>12:30–13:30</td>
+              <td class="rest">🍚 អាហារ</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+            </tr>
+            <tr>
+              <td>13:30–15:00</td>
+              <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
+              <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
+              <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
+              <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
+              <td class="chinese">🇨🇳 ចិន (ថ្នាក់)</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+              <td class="chinese">🇨🇳 ចិន</td>
+            </tr>
+            <tr>
+              <td>15:00–15:30</td>
+              <td class="rest">☕ សម្រាក</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+            </tr>
+            <tr>
+              <td>15:30–17:00</td>
+              <td class="stat">📊 Statistic</td>
+              <td class="data">📈 Data Analysis</td>
+              <td class="csharp">💻 C#</td>
+              <td class="network">🌐 Network</td>
+              <td class="stat">📊 Statistic</td>
+              <td class="data">📈 Data Analysis</td>
+              <td class="review">🔄 Review</td>
+            </tr>
+            <tr>
+              <td>17:00–19:00</td>
+              <td class="rest">🍚 សម្រាក</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+              <td class="rest">🍚</td>
+            </tr>
+            <tr>
+              <td>19:00–20:00</td>
+              <td class="chinese">🇨🇳 Listening</td>
+              <td class="chinese">🇨🇳 Speaking</td>
+              <td class="chinese">🇨🇳 Vocabulary</td>
+              <td class="chinese">🇨🇳 Grammar</td>
+              <td class="chinese">🇨🇳 Listening</td>
+              <td class="chinese">🇨🇳 Speaking</td>
+              <td class="chinese">🇨🇳 Review</td>
+            </tr>
+            <tr>
+              <td>20:00–20:30</td>
+              <td class="rest">☕ សម្រាក</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+              <td class="rest">☕</td>
+            </tr>
+            <tr>
+              <td>20:30–21:30</td>
+              <td class="stat">📊 Statistic</td>
+              <td class="data">📈 Data Analysis</td>
+              <td class="csharp">💻 C#</td>
+              <td class="network">🌐 Network</td>
+              <td class="frontend">📝 IT Practice</td>
+              <td class="frontend">💻 Project</td>
+              <td class="review">📝 Weekly Review</td>
+            </tr>
+            <tr>
+              <td>21:30–22:00</td>
+              <td class="review">📝 រំលឹក</td>
+              <td class="review">📝 រំលឹក</td>
+              <td class="review">📝 រំលឹក</td>
+              <td class="review">📝 រំលឹក</td>
+              <td class="review">📝 រំលឹក</td>
+              <td class="review">📝 រំលឹក</td>
+              <td class="review">📋 រៀបផែនការ</td>
+            </tr>
+            <tr>
+              <td>22:00</td>
+              <td class="sleep">😴 គេង</td>
+              <td class="sleep">😴</td>
+              <td class="sleep">😴</td>
+              <td class="sleep">😴</td>
+              <td class="sleep">😴</td>
+              <td class="sleep">😴</td>
+              <td class="sleep">😴</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#fef2f2"></div><span>Chinese</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#eff6ff"></div><span>Frontend</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#ecfdf5"></div><span>Data</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#fffbeb"></div><span>Statistic</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#f5f3ff"></div><span>C#</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#ecfeff"></div><span>Network</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#fdf2f8"></div><span>Review</span></div>
+      </div>
+
+      <!-- Notes -->
+      <div class="notes">
+        <h3>📌 របៀបប្រើ</h3>
+        <p>• <strong>13:30–15:00</strong> = ចិនថ្នាក់ → 08:00 & 19:00 ប្រើសម្រាប់ពង្រឹង</p>
+        <p>• <strong>Pomodoro:</strong> 25 នាទី Focus → 5 នាទី Break → បន្ទាប់ពី 4 សម័យ = 15 នាទី Long Break</p>
+        <p>• អាច <strong>Install</strong> លើទូរស័ព្ទដូច App ពិតប្រាកដ</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Install Banner -->
+  <div class="install-banner" id="installBanner">
+    <span>📲 តម្លើង App នេះលើទូរស័ព្ទ</span>
+    <button onclick="installApp()">Install</button>
+  </div>
+
+  <script>
+    // ===== PWA Install =====
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBanner').classList.add('show');
+    });
+
+    function installApp() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        deferredPrompt = null;
+        document.getElementById('installBanner').classList.remove('show');
+      });
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('SW registered'))
+          .catch(err => console.log('SW failed', err));
+      });
+    }
+
+    // ===== Pomodoro Timer =====
+    let timer = null;
+    let timeLeft = 25 * 60;
+    let isRunning = false;
+    let currentMode = 'work';
+    let session = 1;
+    const totalSessions = 4;
+
+    const display = document.getElementById('timerDisplay');
+    const modeLabel = document.getElementById('modeLabel');
+    const sessionCount = document.getElementById('sessionCount');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const dotsContainer = document.getElementById('sessionDots');
+
+    function getTimes() {
+      return {
+        work: parseInt(document.getElementById('focusTime').value) || 25,
+        short: parseInt(document.getElementById('shortBreak').value) || 5,
+        long: parseInt(document.getElementById('longBreak').value) || 15
+      };
+    }
+
+    function updateDisplay() {
+      const m = Math.floor(timeLeft / 60);
+      const s = timeLeft % 60;
+      display.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      document.title = `${display.textContent} · Study Planner`;
+    }
+
+    function updateModeUI() {
+      modeLabel.className = 'timer-mode';
+      if (currentMode === 'work') {
+        modeLabel.classList.add('mode-work');
+        modeLabel.textContent = '🍅 Focus Time';
+      } else if (currentMode === 'short') {
+        modeLabel.classList.add('mode-short');
+        modeLabel.textContent = '☕ Short Break';
+      } else {
+        modeLabel.classList.add('mode-long');
+        modeLabel.textContent = '🌿 Long Break';
+      }
+    }
+
+    function updateDots() {
+      const dots = dotsContainer.querySelectorAll('.dot');
+      dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'completed');
+        if (i + 1 < session) dot.classList.add('completed');
+        else if (i + 1 === session && currentMode === 'work') dot.classList.add('active');
+      });
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      document.getElementById('focusTime').disabled = true;
+      document.getElementById('shortBreak').disabled = true;
+      document.getElementById('longBreak').disabled = true;
+
+      timer = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateDisplay();
+        } else {
+          clearInterval(timer);
+          isRunning = false;
+          playNotification();
+          nextSession();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      clearInterval(timer);
+      isRunning = false;
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      isRunning = false;
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      document.getElementById('focusTime').disabled = false;
+      document.getElementById('shortBreak').disabled = false;
+      document.getElementById('longBreak').disabled = false;
+      currentMode = 'work';
+      session = 1;
+      timeLeft = getTimes().work * 60;
+      updateDisplay();
+      updateModeUI();
+      updateDots();
+      sessionCount.textContent = session;
+      document.title = 'Study Planner';
+    }
+
+    function skipSession() {
+      clearInterval(timer);
+      isRunning = false;
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      nextSession();
+    }
+
+    function nextSession() {
+      const times = getTimes();
+      if (currentMode === 'work') {
+        if (session === totalSessions) {
+          currentMode = 'long';
+          timeLeft = times.long * 60;
+        } else {
+          currentMode = 'short';
+          timeLeft = times.short * 60;
+        }
+      } else {
+        if (currentMode === 'long') session = 1;
+        else session++;
+        currentMode = 'work';
+        timeLeft = times.work * 60;
+      }
+      updateDisplay();
+      updateModeUI();
+      updateDots();
+      sessionCount.textContent = session;
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      document.getElementById('focusTime').disabled = false;
+      document.getElementById('shortBreak').disabled = false;
+      document.getElementById('longBreak').disabled = false;
+    }
+
+    function playNotification() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.value = 0.25;
+        osc.start();
+        setTimeout(() => { osc.stop(); ctx.close(); }, 350);
+      } catch(e) {}
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    }
+
+    updateDisplay();
+    updateModeUI();
+    updateDots();
+  </script>
+</body>
+</html>
